@@ -1,0 +1,11 @@
+val := 50;
+zero_count := 0;
+for (line <- read() split "\n" filter len) (
+  count := line[1:].int;
+  switch (line[0])
+  case "L" -> (val -= count)
+  case "R" -> (val += count);
+  val %%= 100;
+  if (val == 0) zero_count += 1;
+);
+zero_count
