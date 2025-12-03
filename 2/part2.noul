@@ -1,0 +1,18 @@
+stuff := read() split "\n" filter len;
+total_invalid := 0;
+for (range <- stuff fold $ split ",") (
+  ab := range split "-" map int;
+  start := ab[0]; end := ab[1];
+  for (i <- start to end) (
+    is := i.str;
+    isl := is.len;
+    for (reps <- 2 to isl) (
+      if (isl % reps == 0)
+      if (is == is[:isl//reps] $* reps) (
+        total_invalid += i;
+        break
+      )
+    );
+  )
+);
+total_invalid
