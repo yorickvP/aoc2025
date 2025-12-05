@@ -1,0 +1,45 @@
+puzzle_input := read() split "\n\n" map lines;
+ranges := puzzle_input[0] map (split "-") >>> (map int);
+ingredients := puzzle_input[1] map int;
+
+inRange := \i, range -> (
+  i >= range[0] and i <= range[1]
+);
+inARange := \i -> ranges any (i inRange _);
+
+part1 := ingredients count inARange;
+print("part1: " $ part1);
+
+rangeOverlaps := \a, b -> (
+  (a[0] max b[0]) <= (a[1] min b[1])
+);
+
+rangeUnion := \a, b -> (
+  [a[0] min b[0],  a[1] max b[1]]
+);
+
+converge := \f, x -> (
+  while(true) (
+    x2 := f(x);
+    if (x == x2) break;
+    x = x2
+  );
+  x
+);
+
+mergeOverlapping := \inputRanges -> (
+  merged := [];
+  for (r <- inputRanges) (
+    o := merged locate? (_ rangeOverlaps r);
+    if (o != null) (
+      merged[o] rangeUnion= r;
+    ) else (
+      merged append= r;
+    )
+  );
+  merged
+);
+
+nonOverlapping := mergeOverlapping converge ranges;
+part2 := nonOverlapping map (\x -> x[1] - x[0] + 1) then sum;
+print("part2 " $ part2);
