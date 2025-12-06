@@ -2,17 +2,14 @@ puzzle_input := read() then lines filter len;
 
 searchInts := _ search_all "\\d+" map int;
 
-parseOperator := \op -> switch(op)
-case "*" -> *
-case "+" -> +;
-searchOperators := _ search_all "\\+|\\*" map parseOperator;
+split_by := \x, f -> x group (\_, y -> y.f.not) map (reject f);
 
 stuff := puzzle_input[:-1] map searchInts then transpose;
-ops := puzzle_input[-1] then searchOperators;
+ops := puzzle_input[-1] search_all "\\S" map eval;
 part1 := stuff zip ops with fold then sum;
 print("part 1: " $ part1);
 
 
-stuff2 := puzzle_input[:-1].transpose map (join "") map strip group (\x, y -> y.len) map (reject is_space) >>> (map int);
+stuff2 := puzzle_input[:-1].transpose map (join "") map strip split_by (== "") map (map int);
 part2 := stuff2 zip ops with fold then sum;
 print("part 2: " $ part2);
