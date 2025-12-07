@@ -4,21 +4,17 @@ width := puzzle_input[0].len;
 height := puzzle_input.len;
 
 # part 1
-doLine := \prevLine, thisLine -> (
-  chars := [];
-  for (i, s <<- thisLine) (
-    chars append=
-      if (s != ".") s
-      else if ((prevLine[i] == "|" or prevLine[i] == "S") or
-          (i > 0 and thisLine[i-1] == "^" and prevLine[i-1] == "|") or
-          (i < (width-1) and thisLine[i+1] == "^" and prevLine[i+1] == "|"))
+doLine := \prev, line ->
+  for (i, s <<- line)
+    yield
+      if (s == "." and ((prev[i] == "|" or prev[i] == "S") or
+          (i > 0 and line[i-1] == "^" and prev[i-1] == "|") or
+          (i < (width-1) and line[i+1] == "^" and prev[i+1] == "|")))
         "|"
-      else "."
-  );
-  chars
-);
+      else s
+  join "";
 
-final_lines := puzzle_input scan doLine map (join "");
+final_lines := puzzle_input scan doLine;
 splits := final_lines.transpose map (_ window 2 count (== (["|", "^"]))) then sum;
 print("part 1: " $ splits);
 # print(final_lines.unlines);
