@@ -1,0 +1,36 @@
+puzzle_input := read() then lines filter len;
+
+width := puzzle_input[0].len;
+height := puzzle_input.len;
+
+# part 1
+doLine := \prevLine, thisLine -> (
+  chars := [];
+  for (i, s <<- thisLine) (
+    chars append=
+      if (s != ".") s
+      else if ((prevLine[i] == "|" or prevLine[i] == "S") or
+          (i > 0 and thisLine[i-1] == "^" and prevLine[i-1] == "|") or
+          (i < (width-1) and thisLine[i+1] == "^" and prevLine[i+1] == "|"))
+        "|"
+      else "."
+  );
+  chars
+);
+
+final_lines := puzzle_input scan doLine map (join "");
+splits := final_lines.transpose map (_ window 2 count (== (["|", "^"]))) then sum;
+print("part 1: " $ splits);
+# print(final_lines.unlines);
+
+# part 2
+timelines := memoize (\posy, posx -> (
+  if (posx < 0 or posx >= width) return 0;
+  if (posy == height) return 1;
+  switch (puzzle_input[posy][posx])
+  case "." -> timelines(posy + 1, posx)
+  case "^" -> timelines(posy, posx - 1) + timelines(posy, posx + 1)
+));
+
+tl := timelines(1, puzzle_input[0] locate "S");
+print("part 2: " $ tl);
