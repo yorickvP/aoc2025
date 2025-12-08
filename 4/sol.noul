@@ -1,0 +1,39 @@
+puzzle_input := read() . lines filter len;
+height := puzzle_input.len;
+width := puzzle_input[0].len;
+isInBounds := \[i, j] -> i >= 0 and j >= 0 and i < height and j < width;
+
+ix := \a, x -> a[x[0]][x[1]];
+
+connEight := [V(1, 0), V(0, 1), V(0, -1), V(-1, 0), V(1, 1), V(-1, -1), V(1, -1), V(-1, 1)];
+
+cell_value := \input, v -> (
+  if ((input ix v) != "@") return ".";
+  rolls := 0;
+  for (delta <- connEight) (
+    u := v + delta;
+    if (u.isInBounds.not) continue;
+    if ((input ix u) == "@") rolls += 1;
+  );
+  if (rolls < 4) return "x";
+  return "@"
+);
+
+get_new_grid := \input -> (
+  0 til height map (\i ->
+    0 til width map (\j -> cell_value(input, V(i, j)))
+  )
+);
+count_accessible := \grid -> (grid map (count (== "x")) fold (+));
+
+print("part 1: " $ puzzle_input.get_new_grid.count_accessible);
+
+x := puzzle_input;
+arr := 0;
+while(true) (
+  x .= get_new_grid;
+  cnt := x.count_accessible;
+  arr += cnt;
+  if (cnt == 0) break;
+);
+print("part 2: " $ arr);
