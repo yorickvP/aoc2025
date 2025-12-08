@@ -1,0 +1,25 @@
+puzzle_input := read().lines filter len map (split ",") map (map int) >>> vector;
+distance := \a, b -> (a - b) ^ 2 then sum then sqrt;
+closest := puzzle_input combinations 2 sort (<=> on (apply distance));
+
+connections := puzzle_input map (\x -> [x, {x}]) then dict;
+
+for (i <- closest take 1000) (
+  if (i[1] in connections[i[0]]) continue;
+  new := connections[i[0]] || connections[i[1]];
+  for (j <- new) connections[j] = new;
+);
+# print(connections.values then unique map len sort <=>);
+print("part 1: " $ (connections.values.unique map len sort >=< take 3 then product));
+
+connections = puzzle_input map (\x -> [x, {x}]) then dict;
+
+for (i <- closest) (
+  if (i[1] in connections[i[0]]) continue;
+  new := connections[i[0]] || connections[i[1]];
+  for (j <- new) connections[j] = new;
+  if (new.len == puzzle_input.len) (
+    print("part 2: " $ i[0][0] * i[1][0]);
+    break;
+  );
+);
