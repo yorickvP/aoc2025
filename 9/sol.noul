@@ -1,0 +1,23 @@
+puzzle_input := read().lines filter len map (split ",") map (map int) >>> vector;
+rectSize := \a, b -> (a - b + V(1, 1)) then abs.product;
+
+rects := puzzle_input combinations 2;
+
+part1 := rects map (rectSize of _) then max;
+print("part 1: " $ part1);
+
+edgeIntersectsSquare := \line, square -> (
+  x1 := line[0][0]; y1 := line[0][1];
+  x2 := line[1][0]; y2 := line[1][1];
+  x3 := square[0][0]; y3 := square[0][1];
+  x4 := square[1][0]; y4 := square[1][1];
+  if (y1 == y2) return y1 > y3 and y1 < y4 and x1 < x4 and x2 > x3;
+  if (x1 == x2) return x1 > x3 and x1 < x4 and y1 < y4 and y2 > y3;
+);
+
+allLines := puzzle_input window 2 +. [puzzle_input[-1], puzzle_input[0]];
+
+part2 := rects reject (\x -> allLines any (_ edgeIntersectsSquare x)) map (rectSize of _) then max;
+
+
+print("part 2: " $ part2);
